@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  role      Role      @default(CUSTOMER)
+  customer  Customer?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+model Customer {
+  id        Int         @id @default(autoincrement())
+  nama      String
+  noHp      String
+  alamat    String
+  userId    Int         @unique
+  user      User        @relation(fields: [userId], references: [id])
+  transaksi Transaksi[]
+}
+
+model Menu {
+  id        Int             @id @default(autoincrement())
+  nama      String
+  deskripsi String?
+  harga     Float
+  stok      Int             @default(0)
+  kategori  String
+  tersedia  Boolean         @default(true)
+  items     TransaksiItem[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Transaksi {
+  id         Int             @id @default(autoincrement())
+  customerId Int
+  customer   Customer        @relation(fields: [customerId], references: [id])
+  totalHarga Float
+  status     StatusPesanan   @default(PENDING)
+  items      TransaksiItem[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model TransaksiItem {
+  id          Int       @id @default(autoincrement())
+  transaksiId Int
+  menuId      Int
+  jumlah      Int
+  hargaSatuan Float
+  transaksi   Transaksi @relation(fields: [transaksiId], references: [id])
+  menu        Menu      @relation(fields: [menuId], references: [id])
+}
+
+enum StatusPesanan {
+  PENDING
+  DIPROSES
+  SELESAI
+  DIBATALKAN
+}
