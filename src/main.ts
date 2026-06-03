@@ -35,14 +35,15 @@ async function bootstrap() {
     document,
   );
 
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 
   console.log(
-    `Server running on http://localhost:3000`,
+    `Server running on http://localhost:${port}`,
   );
 
   console.log(
-    `Swagger running on http://localhost:3000/api`,
+    `Swagger running on http://localhost:${port}/api`,
   );
 }
 
