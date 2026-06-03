@@ -1,17 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
-  private prisma = new PrismaClient();
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: any) {
+  async create(dto: CreateCustomerDto) {
+    // Cek duplikasi userId
+    const existing = await this.prisma.customer.findUnique({
+      where: { userId: dto.userId },
+    });
+    if (existing) {
+      throw new ConflictException(
+        'Customer dengan userId ini sudah ada',
+      );
+    }
+
     return this.prisma.customer.create({
       data: {
-        nama: data.nama,
-        noHp: data.noHp,
-        alamat: data.alamat,
-        userId: data.userId,
+        nama: dto.nama,
+        noHp: dto.noHp,
+        alamat: dto.alamat,
+        userId: dto.userId,
       },
     });
   }
@@ -27,15 +43,16 @@ export class CustomerService {
       where: { id },
       include: { transaksi: true },
     });
-    if (!customer) throw new NotFoundException('Customer tidak ditemukan');
+    if (!customer)
+      throw new NotFoundException('Customer tidak ditemukan');
     return customer;
   }
 
-  async update(id: number, data: any) {
+  async update(id: number, dto: UpdateCustomerDto) {
     await this.findOne(id);
     return this.prisma.customer.update({
       where: { id },
-      data,
+      data: dto,
     });
   }
 

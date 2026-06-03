@@ -1,16 +1,24 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
+import { Role } from '@prisma/client';
+
+import { PrismaService } from '../prisma/prisma.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-  private prisma = new PrismaClient();
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
-  async register(data: any) {
-    const user = await this.prisma.user.findUnique({ where: { email: data.email } });
-    if (user) throw new BadRequestException('Email sudah digunakan');
+  async register(data: RegisterDto) {
+    const existing = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+    if (existing) throw new BadRequestException('Email sudah digunakan');
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const newUser = await this.prisma.user.create({
@@ -18,20 +26,30 @@ export class AuthService {
         username: data.username,
         email: data.email,
         password: hashedPassword,
-        role: data.role ?? 'CUSTOMER',
+        role: (data.role as Role) ?? Role.CUSTOMER,
       },
     });
-    return { message: 'Register berhasil', data: newUser };
+
+    // Jangan return password ke client
+    const { password, ...safeUser } = newUser;
+    return { message: 'Register berhasil', data: safeUser };
   }
 
-  async login(data: any) {
-    const user = await this.prisma.user.findUnique({ where: { email: data.email } });
+  async login(data: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
     if (!user) throw new UnauthorizedException('Email tidak ditemukan');
 
     const validPassword = await bcrypt.compare(data.password, user.password);
     if (!validPassword) throw new UnauthorizedException('Password salah');
 
-    const token = this.jwtService.sign({ id: user.id, email: user.email, role: user.role });
+    const token = this.jwtService.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
     return { access_token: token };
   }
 }
