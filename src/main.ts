@@ -18,33 +18,21 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-  .setTitle('Restaurant API')
-  .setDescription('API untuk sistem restoran')
-  .setVersion('1.0')
-  .addBearerAuth()
-  .build();
+    .setTitle('Restaurant API')
+    .setDescription('API untuk sistem restoran')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
 
-  const document = SwaggerModule.createDocument(
-    app,
-    config,
-  );
-
-  SwaggerModule.setup(
-    'api',
-    app,
-    document,
-  );
+  // INI YANG HILANG
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  console.log(
-    `Server running on http://localhost:${port}`,
-  );
-
-  console.log(
-    `Swagger running on http://localhost:${port}/api`,
-  );
+  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Swagger running on http://localhost:${port}/api`);
 }
 
 bootstrap();
