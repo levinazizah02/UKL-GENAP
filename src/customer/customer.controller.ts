@@ -18,10 +18,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { RolesGuard } from '../auth/roles.guard';   // ← tambah import
+import { Roles } from '../auth/roles.decorator'; 
 
 @ApiTags('Customer')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin') 
 @Controller('customer')
 export class CustomerController {
   constructor(

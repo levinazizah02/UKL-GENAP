@@ -18,10 +18,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { RolesGuard } from '../auth/roles.guard';   // ← tambah import
+import { Roles } from '../auth/roles.decorator';
+
 
 @ApiTags('Menu')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
 @Controller('menu')
 export class MenuController {
   constructor(
@@ -29,6 +33,7 @@ export class MenuController {
   ) {}
 
   @Post()
+  @Roles('admin')
   @ApiOperation({ summary: 'Tambah menu baru' })
   @ApiResponse({ status: 201, description: 'Menu berhasil ditambahkan' })
   create(@Body() dto: CreateMenuDto) {

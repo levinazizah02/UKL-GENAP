@@ -9,8 +9,10 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3001',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'], // ← TAMBAH INI
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // ← opsional tapi recommended
   });
-
+ 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
