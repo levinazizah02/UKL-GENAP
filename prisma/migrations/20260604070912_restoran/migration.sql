@@ -32,6 +32,7 @@ CREATE TABLE `Menu` (
     `harga` DOUBLE NOT NULL,
     `stok` INTEGER NOT NULL DEFAULT 0,
     `kategori` VARCHAR(191) NOT NULL,
+    `imageUrl` VARCHAR(191) NULL,
     `tersedia` BOOLEAN NOT NULL DEFAULT true,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,

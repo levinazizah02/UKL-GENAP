@@ -40,6 +40,7 @@ model Menu {
   harga     Float
   stok      Int             @default(0)
   kategori  String
+  imageUrl  String?
   tersedia  Boolean         @default(true)
   items     TransaksiItem[]
   createdAt DateTime        @default(now())

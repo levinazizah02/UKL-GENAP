@@ -1,8 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
 } from 'class-validator';
@@ -13,7 +16,8 @@ export class CreateMenuDto {
   @IsNotEmpty()
   nama!: string;
 
-  @ApiProperty({ example: 15000.5, description: 'Harga menu' })
+  @ApiProperty({ example: 15000, description: 'Harga menu' })
+  @Transform(({ value }) => Number(value))
   @IsNumber()
   @Min(0)
   harga!: number;
@@ -24,7 +28,13 @@ export class CreateMenuDto {
   kategori!: string;
 
   @ApiProperty({ example: 10, description: 'Stok menu' })
+  @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
   @Min(0)
   stok!: number;
+
+  @ApiPropertyOptional({ description: 'URL gambar menu (diisi otomatis)' })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }

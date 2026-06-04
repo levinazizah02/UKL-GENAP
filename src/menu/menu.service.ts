@@ -9,7 +9,13 @@ export class MenuService {
 
   async create(dto: CreateMenuDto) {
     return this.prisma.menu.create({
-      data: dto,
+      data: {
+        nama:     dto.nama,
+        harga:    dto.harga,
+        kategori: dto.kategori,
+        stok:     dto.stok,
+        imageUrl: dto.imageUrl,
+      },
     });
   }
 
@@ -20,9 +26,7 @@ export class MenuService {
   }
 
   async findOne(id: number) {
-    const menu = await this.prisma.menu.findUnique({
-      where: { id },
-    });
+    const menu = await this.prisma.menu.findUnique({ where: { id } });
     if (!menu) throw new NotFoundException('Menu tidak ditemukan');
     return menu;
   }
@@ -31,7 +35,13 @@ export class MenuService {
     await this.findOne(id);
     return this.prisma.menu.update({
       where: { id },
-      data: dto,
+      data: {
+        nama:     dto.nama,
+        harga:    dto.harga,
+        kategori: dto.kategori,
+        stok:     dto.stok,
+        imageUrl: dto.imageUrl,
+      },
     });
   }
 

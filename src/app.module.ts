@@ -7,6 +7,7 @@ import { MenuModule } from './menu/menu.module';
 import { TransaksiModule } from './transaksi/transaksi.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   controllers: [AppController],
@@ -17,6 +18,7 @@ import { AppController } from './app.controller';
     CustomerModule,
     MenuModule,
     TransaksiModule,
+    CloudinaryModule,
   ],
   providers: [AppService],
 })
