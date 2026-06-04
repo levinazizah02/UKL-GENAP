@@ -76,7 +76,7 @@ export class TransaksiService {
       );
 
       return transaksi;
-    });
+    }, {timeout: 30000});
   }
 
   async findAll() {
