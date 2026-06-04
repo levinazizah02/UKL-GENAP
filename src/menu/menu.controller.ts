@@ -33,7 +33,7 @@ export class MenuController {
   ) {}
 
   @Post()
-  @Roles('admin')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Tambah menu baru' })
   @ApiResponse({ status: 201, description: 'Menu berhasil ditambahkan' })
   create(@Body() dto: CreateMenuDto) {
