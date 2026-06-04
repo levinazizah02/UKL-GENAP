@@ -45,8 +45,6 @@ export class AuthService {
           username: data.username,
           email: data.email,
           password: hashedPassword,
-
-          // default role
           role: Role.CUSTOMER,
         },
       });

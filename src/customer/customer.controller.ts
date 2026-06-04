@@ -18,20 +18,21 @@ import { AuthGuard } from '@nestjs/passport';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { RolesGuard } from '../auth/roles.guard';   // ← tambah import
-import { Roles } from '../auth/roles.decorator'; 
+import { RolesGuard } from '../auth/guards/roles.guard';   // ← tambah import
+import { Roles } from '../auth/decorators/roles.decorator'; 
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Customer')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('admin') 
 @Controller('customer')
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
   ) {}
-
+  
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin') 
   @ApiOperation({ summary: 'Buat customer baru' })
   @ApiResponse({ status: 201, description: 'Customer berhasil dibuat' })
   create(@Body() dto: CreateCustomerDto) {

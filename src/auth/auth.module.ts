@@ -1,21 +1,19 @@
-import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-
-import { PrismaService } from '../prisma/prisma.service';
-import { AuthController } from './auth.controller';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
+import { AuthController } from './auth.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
+@Global()
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'default-secret-ganti-di-env',
-      signOptions: {
-        expiresIn: '1d',
-      },
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '12h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PrismaService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}
