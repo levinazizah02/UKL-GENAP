@@ -31,8 +31,6 @@ export class CustomerController {
   ) {}
   
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN') 
   @ApiOperation({ summary: 'Buat customer baru' })
   @ApiResponse({ status: 201, description: 'Customer berhasil dibuat' })
   create(@Body() dto: CreateCustomerDto) {
