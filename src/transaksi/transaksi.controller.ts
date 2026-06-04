@@ -41,14 +41,8 @@ export class TransaksiController {
   }
 
   @Patch(':id/status')
-  updateStatus(
-    @Param('id') id: string,
-    @Body() dto: UpdateStatusDto,
-  ) {
-    return this.transaksiService.updateStatus(
-      Number(id),
-      dto.status,
-    );
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateStatusDto) {
+    return this.transaksiService.updateStatus(Number(id), dto); // ← langsung dto
   }
 
   @Delete(':id')
