@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
@@ -15,41 +20,81 @@ export class AuthService {
   ) {}
 
   async register(data: RegisterDto) {
-    const existing = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
-    if (existing) throw new BadRequestException('Email sudah digunakan');
+    const existing =
+      await this.prisma.user.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    const newUser = await this.prisma.user.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        password: hashedPassword,
-        role: (data.role as Role) ?? Role.CUSTOMER,
-      },
-    });
+    if (existing) {
+      throw new BadRequestException(
+        'Email sudah digunakan',
+      );
+    }
 
-    // Jangan return password ke client
-    const { password, ...safeUser } = newUser;
-    return { message: 'Register berhasil', data: safeUser };
+    const hashedPassword =
+      await bcrypt.hash(
+        data.password,
+        10,
+      );
+
+    const newUser =
+      await this.prisma.user.create({
+        data: {
+          username: data.username,
+          email: data.email,
+          password: hashedPassword,
+
+          // default role
+          role: Role.CUSTOMER,
+        },
+      });
+
+    const { password, ...safeUser } =
+      newUser;
+
+    return {
+      message: 'Register berhasil',
+      data: safeUser,
+    };
   }
 
   async login(data: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
-    if (!user) throw new UnauthorizedException('Email tidak ditemukan');
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
 
-    const validPassword = await bcrypt.compare(data.password, user.password);
-    if (!validPassword) throw new UnauthorizedException('Password salah');
+    if (!user) {
+      throw new UnauthorizedException(
+        'Email tidak ditemukan',
+      );
+    }
 
-    const token = this.jwtService.sign({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const validPassword =
+      await bcrypt.compare(
+        data.password,
+        user.password,
+      );
 
-    return { access_token: token };
+    if (!validPassword) {
+      throw new UnauthorizedException(
+        'Password salah',
+      );
+    }
+
+    const token =
+      this.jwtService.sign({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+    return {
+      access_token: token,
+    };
   }
 }
